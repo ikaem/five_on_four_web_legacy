@@ -9,6 +9,11 @@ import styles from '../styles/Home.module.css';
 // TODO this is temp
 import db from '../lib/json-server/data.json';
 import Link from 'next/link';
+import {
+  getUserJoinedMatches,
+  transformRawMatchesToMatchesWithPlayers,
+} from '../features/matches/utils/helpers/get-my-joined-matches';
+import { MatchesList } from '../features/matches/components/matches-list/matches-list';
 
 // TODO this is temp data
 
@@ -16,31 +21,24 @@ type HomePageProps = InferGetServerSidePropsType<typeof getServerSideProps>;
 
 const Home: NextPage<HomePageProps> = ({ user }) => {
   // TODO this will later be done via csr and use effect
-  const matches = db.matches;
+  const rawMatches = db.matches;
+  const rawPlayers = db.players;
+  const matches = transformRawMatchesToMatchesWithPlayers(
+    rawMatches,
+    rawPlayers
+  );
+  const matchesThatIJoined = getUserJoinedMatches(matches, user);
 
   return (
     <div className={styles.container}>
       <h1>This is main page</h1>
-      <ul>
-        {matches.map((m) => {
-          return (
-            <li key={m.id}>
-              {/* <Link href={`/matches/${m.id}`} passHref> */}
-              <Link
-                href={{
-                  pathname: '/matches/[id]',
-                  query: {
-                    id: m.id,
-                  },
-                }}
-                passHref
-              >
-                <a>{m.name}</a>
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
+
+      <h2>This is matches that I joined</h2>
+
+      <MatchesList matches={matchesThatIJoined} />
+
+      <h2>This is all matches </h2>
+      <MatchesList matches={matches} />
     </div>
   );
 };
