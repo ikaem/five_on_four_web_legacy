@@ -8,38 +8,44 @@ import Image from 'next/image';
 // TODO this is temp
 import db from '../../lib/json-server/data.json';
 import Link from 'next/link';
+import { MatchesList } from '../../features/matches/components/matches-list/matches-list';
+import { transformRawMatchesToMatchesWithPlayers } from '../../features/matches/utils/helpers/get-my-joined-matches';
+import { MatchesSearch } from '../../features/matches/components/matches-search/matches-search';
+import { FormEvent, useState } from 'react';
+import { useRouter } from 'next/router';
 
 // TODO this is temp data
 
 type MatchesPageProps = InferGetServerSidePropsType<typeof getServerSideProps>;
 
 const MatchesPage: NextPage<MatchesPageProps> = ({ user }) => {
+  const router = useRouter();
+
   // TODO this will later be done via csr and use effect
-  const matches = db.matches;
+  const rawMatches = db.matches;
+  const rawPlayers = db.players;
+  const matches = transformRawMatchesToMatchesWithPlayers(
+    rawMatches,
+    rawPlayers
+  );
+
+  const onSubmitSearch = (year: string, month: string) => {
+    router.push({
+      pathname: '/matches/[...slug]',
+      query: {
+        // slug: `${year}/${month}`,
+        slug: [year, month]
+      },
+    });
+  };
 
   return (
     <div>
-      <h1>This is main page</h1>
-      <ul>
-        {matches.map((m) => {
-          return (
-            <li key={m.id}>
-              {/* <Link href={`/matches/${m.id}`} passHref> */}
-              <Link
-                href={{
-                  pathname: '/matches/[id]',
-                  query: {
-                    id: m.id,
-                  },
-                }}
-                passHref
-              >
-                <a>{m.name}</a>
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
+      <h1>This is matches page</h1>
+
+      <MatchesSearch onSubmit={onSubmitSearch} />
+
+      <MatchesList matches={matches} />
     </div>
   );
 };

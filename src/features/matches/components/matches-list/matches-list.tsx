@@ -10,7 +10,7 @@ export const MatchesList: React.FC<MatchesListProps> = ({ matches }) => {
   return (
     <ul>
       {matches.map((m) => {
-        return <MatchBrief key={m.id} match={m} />;
+        return <MatchBrief key={m.id} match={m} onUserMatchAction={() => console.log("joining or unjoining match")} />;
       })}
     </ul>
   );

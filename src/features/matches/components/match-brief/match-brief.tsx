@@ -5,16 +5,17 @@ import classes from './match-brief.module.css';
 
 type MatchBriefProps = {
   match: Match;
+  onUserMatchAction: () => void
 };
 
-export const MatchBrief: React.FC<MatchBriefProps> = ({ match }) => {
+export const MatchBrief: React.FC<MatchBriefProps> = ({ match, onUserMatchAction }) => {
   return (
     <li className={classes['match-brief']}>
       {/* <Link href={`/matches/${m.id}`} passHref> */}
 
       <img
         className={classes['match-brief__image']}
-        src='images/futsal.jpg'
+        src='/images/futsal.jpg'
         alt='match'
       />
       <br />
@@ -33,8 +34,13 @@ export const MatchBrief: React.FC<MatchBriefProps> = ({ match }) => {
         }}
         passHref
       >
-        <a className='match-brief__title'>{match.name}</a>
+        <a className={classes['match-brief__link']}>{match.name}</a>
       </Link>
+      <br />
+
+      <button onClick={onUserMatchAction}>
+        Unjoin
+      </button>
 
       <br />
     </li>

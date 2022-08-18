@@ -1,20 +1,28 @@
 import Link from 'next/link';
 import { PropsWithChildren } from 'react';
 
+import classes from "./layout.module.css";
+
 export const Layout: React.FC<PropsWithChildren> = ({ children }) => {
   return (
-    <>
-      <header>
-        <nav>
-          <ul>
-            <li>
+    <div>
+      <header className={classes.layout}>
+        <nav className='navigation'>
+          <ul className="navigation__items">
+            <li className='navigation__item'>
               <Link href='/' passHref>
-                <a>Home</a>
+                <a className="navigation__link">Home</a>
               </Link>
             </li>
             <li>
-              <Link href='/match-edit' passHref>
+              <Link href="/matches/edit" passHref>
                 <a>Create match</a>
+              </Link>
+            </li>
+
+            <li>
+              <Link href="/matches" passHref>
+                <a>All matches</a>
               </Link>
             </li>
 
@@ -28,9 +36,10 @@ export const Layout: React.FC<PropsWithChildren> = ({ children }) => {
         </nav>
       </header>
 
-      <main>{children}</main>
+      {/* TODO main is good */}
+      <main className="layout__main-content">{children}</main>
 
-      <footer>Copyright Five on hour</footer>
-    </>
+      <footer className='layout__footer'>Copyright Five on hour</footer>
+    </div>
   );
 };
