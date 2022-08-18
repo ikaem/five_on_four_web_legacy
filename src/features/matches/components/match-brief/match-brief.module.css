@@ -1,0 +1,13 @@
+.match-brief {
+  padding: 1rem
+}
+
+.match-brief__image {
+  width: 200px;
+  height: auto;
+}
+
+.match-brief__link {
+  font-weight: 700;
+  font-size: 1.5rem;
+}
