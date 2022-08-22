@@ -43,6 +43,7 @@ const MatchFilteredPage: NextPage = () => {
 
     const dateString = slug.join('-');
     const date = new Date(dateString).toISOString();
+    // TODO this is a bug if not possible data to create from thwo eelements
     console.log({ date, dateString });
 
     const filteredMatches = matches.filter((m) => {

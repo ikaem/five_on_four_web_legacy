@@ -1,10 +1,17 @@
-import { NextPage } from 'next';
+import {
+  GetStaticPaths,
+  GetStaticProps,
+  InferGetStaticPropsType,
+  NextPage,
+} from 'next';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useState } from 'react';
 
 import db from '../../lib/json-server/data.json';
 
-const MatchPage: NextPage = () => {
+type MatchPageProps = InferGetStaticPropsType<typeof getStaticProps>;
+
+const MatchPage: NextPage<MatchPageProps> = ({ match }) => {
   // TODO this component will have following rendered in client
   /* 
   - joined players 
@@ -14,49 +21,8 @@ const MatchPage: NextPage = () => {
   - actually, the whole thing can be csr, apart from meta stuff
   */
 
-  // TODO use this only for filtering
-  const [match, setMatch] = useState<Match | null>(null);
-
-  const { query } = useRouter();
-  const id = query.id;
-
-  console.log('query:', query);
-  // this is url http://localhost:3000/matches/2022/08/09
-  // this is query id: (3) ['2022', '08', '09']
-
-  const handleLoadMatch = useCallback(async () => {
-    // TOD Oset loading here and so on
-
-    // TODO we could be checking stuff here
-    // this is if filename was [...id].tsx
-    // this if check is no good, because args would always be an array
-
-    console.log('typeof', typeof id);
-
-    const queryId = typeof id === 'string' ? id : id?.[0];
-
-    const matchId = Number.parseInt(queryId);
-    const foundMatch = db.matches.find((m) => m.id === matchId);
-
-    if (foundMatch === null) setMatch(null);
-
-    const players = db.players.filter((p) => {
-      return p.match_id === matchId;
-    });
-
-    const loadedMatch: Match = {
-      ...foundMatch,
-      joined_players: players,
-    };
-
-    setMatch(loadedMatch);
-  }, [id]);
-
-  useEffect(() => {
-    handleLoadMatch();
-  }, [handleLoadMatch]);
-
-  if (match === null) return <h1>There is no match</h1>;
+  // TODO here should use router.isFallback
+  // if (match === null) return <h1>There is no match</h1>;
 
   // TODO probably good to split into components if gets complicated
   return (
@@ -135,3 +101,58 @@ export type Player = {
 //   })
 
 // }
+
+// JSUT FOR STATIC ILLUSTRACTION
+export const getStaticPaths: GetStaticPaths = () => {
+  const paths = db.matches.map((m) => {
+    return {
+      params: {
+        id: m.id.toString(),
+      },
+    };
+  });
+
+  return {
+    paths,
+    // https://stackoverflow.com/a/67787457 - ntoe that if page has not been built for this path, we weill have to await if with router.isfallback
+    fallback: true,
+  };
+};
+
+// TODO i am not sure i want to statically render this - because these will keep being added
+// server side might be better, probably because of auth too
+export const getStaticProps: GetStaticProps<
+  {
+    match: Match;
+    // TODO this might need to return some auth information or something
+    // and i prefer it to be done via get serverside props
+  },
+  { id: string }
+> = async ({ params }) => {
+  const { id } = params;
+
+  const matchId = Number.parseInt(id);
+  const foundMatch = db.matches.find((m) => m.id === matchId);
+
+  if (foundMatch === null)
+    return {
+      // TODO should redirect somehow
+      notFound: true,
+    };
+
+  const players = db.players.filter((p) => {
+    return p.match_id === matchId;
+  });
+
+  const loadedMatch: Match = {
+    ...foundMatch,
+    joined_players: players,
+  };
+
+  return {
+    props: {
+      match: loadedMatch,
+    },
+    revalidate: 60
+  };
+};
