@@ -32,7 +32,7 @@ export const getStaticProps: GetStaticProps<{
 
   const data = JSON.parse(rawData);
 
-  // console.log({ data });
+
 
   const stats: Stats = {
     matchesNumber: data.matches.length,
@@ -40,7 +40,6 @@ export const getStaticProps: GetStaticProps<{
     usersNumber: data.users.length,
   };
 
-  console.log({ stats });
 
   return {
     props: {

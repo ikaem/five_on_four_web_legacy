@@ -12,6 +12,8 @@ import db from '../../lib/json-server/data.json';
 type MatchPageProps = InferGetStaticPropsType<typeof getStaticProps>;
 
 const MatchPage: NextPage<MatchPageProps> = ({ match }) => {
+  const router = useRouter();
+
   // TODO this component will have following rendered in client
   /* 
   - joined players 
@@ -25,6 +27,10 @@ const MatchPage: NextPage<MatchPageProps> = ({ match }) => {
   // if (match === null) return <h1>There is no match</h1>;
 
   // TODO probably good to split into components if gets complicated
+
+  if (!match) return <h1>Loading...</h1>;
+  // if(router.isFallback) return <h1>Loading...</h1>
+
   return (
     <div>
       <h1>{match.name}</h1>
@@ -104,10 +110,11 @@ export type Player = {
 
 // JSUT FOR STATIC ILLUSTRACTION
 export const getStaticPaths: GetStaticPaths = () => {
-  const paths = db.matches.map((m) => {
+  const paths = db.matches.slice(0, db.matches.length - 2).map((m) => {
     return {
       params: {
         id: m.id.toString(),
+        // we could have multiple identifiers here if page lives in a nested dynamic stuff
       },
     };
   });
@@ -116,6 +123,8 @@ export const getStaticPaths: GetStaticPaths = () => {
     paths,
     // https://stackoverflow.com/a/67787457 - ntoe that if page has not been built for this path, we weill have to await if with router.isfallback
     fallback: true,
+    // fallback: false,
+    // fallback: "blocking"
   };
 };
 
@@ -128,16 +137,24 @@ export const getStaticProps: GetStaticProps<
     // and i prefer it to be done via get serverside props
   },
   { id: string }
-> = async ({ params }) => {
-  const { id } = params;
+> = async (context) => {
+  const { id } = context.params;
 
   const matchId = Number.parseInt(id);
   const foundMatch = db.matches.find((m) => m.id === matchId);
 
-  if (foundMatch === null)
+
+  if (!foundMatch)
     return {
       // TODO should redirect somehow
       notFound: true,
+      // redirect: {
+      //   destination: "/login",
+      //   // todo NOT INTERESTED IN THIS THAT MUCH
+      //   permanent: true,
+      //   statusCode: 200,
+      //   basePath: "/"
+      // }
     };
 
   const players = db.players.filter((p) => {
@@ -149,10 +166,11 @@ export const getStaticProps: GetStaticProps<
     joined_players: players,
   };
 
+
   return {
     props: {
       match: loadedMatch,
     },
-    revalidate: 60
+    revalidate: 60,
   };
 };

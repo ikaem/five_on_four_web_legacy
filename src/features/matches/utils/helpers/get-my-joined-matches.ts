@@ -1,6 +1,8 @@
 import { User } from '../../../../pages/matches';
 import { Match, Player } from '../../../../pages/matches/[id]';
 
+// TODO this will probably go away from here, and not sure if this is something i need at all
+
 // TODO not sure if this would be here
 export const getUserJoinedMatches = (matches: Match[], user: User) => {
   let matchesPlayers: Player[] = [];
@@ -72,9 +74,7 @@ export const transformRawMatchesToMatchesWithPlayers = (
   rawMatches: RawMatch[],
   players: Player[]
 ) => {
-  // create map of matches
 
-  // console.log("WHAT IS THIS", rawMatches)
 
   const matchesMap = rawMatches.reduce<Record<number, Match>>(
     (acc, current) => {
@@ -99,9 +99,7 @@ export const transformRawMatchesToMatchesWithPlayers = (
   // if a player has match id that exists in the map, add it ther - add it anyway
 
   for (const player of players) {
-    console.log({ player });
     const match = matchesMap[player.match_id];
-    console.log({ match });
     matchesMap[player.match_id].joined_players.push(player);
   }
 

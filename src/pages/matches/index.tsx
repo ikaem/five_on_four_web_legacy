@@ -13,6 +13,7 @@ import { transformRawMatchesToMatchesWithPlayers } from '../../features/matches/
 import { MatchesSearch } from '../../features/matches/components/matches-search/matches-search';
 import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/router';
+import { useMatchesService } from '../../features/matches/services/matches/use-matches-service';
 
 // TODO this is temp data
 
@@ -20,6 +21,12 @@ type MatchesPageProps = InferGetServerSidePropsType<typeof getServerSideProps>;
 
 const MatchesPage: NextPage<MatchesPageProps> = ({ user }) => {
   const router = useRouter();
+
+  const { handleGetMatches } = useMatchesService();
+
+  const { isLoading, isError, error, data } = handleGetMatches();
+
+  // console.log({ isLoading, isError, error, data });
 
   // TODO this will later be done via csr and use effect
   const rawMatches = db.matches;
@@ -34,7 +41,7 @@ const MatchesPage: NextPage<MatchesPageProps> = ({ user }) => {
       pathname: '/matches/[...slug]',
       query: {
         // slug: `${year}/${month}`,
-        slug: [year, month]
+        slug: [year, month],
       },
     });
   };

@@ -14,24 +14,26 @@ import {
   transformRawMatchesToMatchesWithPlayers,
 } from '../features/matches/utils/helpers/get-my-joined-matches';
 import { MatchesList } from '../features/matches/components/matches-list/matches-list';
+import { Match } from './matches/[id]';
 
 // TODO this is temp data
 
 type HomePageProps = InferGetServerSidePropsType<typeof getServerSideProps>;
 
-const Home: NextPage<HomePageProps> = ({ user }) => {
+const Home: NextPage<HomePageProps> = ({
+  user,
+  matches,
+  matchesThatIJoined,
+}) => {
   // TODO this will later be done via csr and use effect
-  const rawMatches = db.matches;
-  const rawPlayers = db.players;
-  const matches = transformRawMatchesToMatchesWithPlayers(
-    rawMatches,
-    rawPlayers
-  );
-  const matchesThatIJoined = getUserJoinedMatches(matches, user);
 
   return (
     <div className={styles.container}>
       <h1>This is main page</h1>
+
+      <h2>This is me:</h2>
+
+      <p>Nickname: {user.nickname}</p>
 
       <h2>This is matches that I joined</h2>
 
@@ -56,17 +58,31 @@ export type User = {
 // TODO this general html part could be done statically too - but, if we want to authenticate via server side, no stastic then
 export const getServerSideProps: GetServerSideProps<{
   user: User;
+  matches: Match[];
+  matchesThatIJoined: Match[];
   // TODO this might need to return some auth information or something
   // and i prefer it to be done via get serverside props
-}> = async () => {
+}> = async (context) => {
+  // console.log({ req: context.req, res: context.res });
+
   const user: User = {
     id: 1,
     nickname: 'Zidane',
   };
 
+  const rawMatches = db.matches;
+  const rawPlayers = db.players;
+  const matches = transformRawMatchesToMatchesWithPlayers(
+    rawMatches,
+    rawPlayers
+  );
+  const matchesThatIJoined = getUserJoinedMatches(matches, user);
+
   return {
     props: {
       user,
+      matches,
+      matchesThatIJoined,
     },
   };
 };

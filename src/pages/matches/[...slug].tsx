@@ -22,7 +22,7 @@ const MatchFilteredPage: NextPage = () => {
 
   const { query } = useRouter();
   const slug = query.slug;
-  console.log('query:', query);
+
   // this is url http://localhost:3000/matches/2022/08/09
   // this is query id: (3) ['2022', '08', '09']
 
@@ -37,21 +37,17 @@ const MatchFilteredPage: NextPage = () => {
       rawPlayers
     );
 
-    console.log({ matches });
-
-    console.log({ slug });
 
     const dateString = slug.join('-');
     const date = new Date(dateString).toISOString();
     // TODO this is a bug if not possible data to create from thwo eelements
-    console.log({ date, dateString });
+
 
     const filteredMatches = matches.filter((m) => {
       // TODO this could be done better 
       const yearOnly = new Date().getFullYear()
       const monthOnly = new Date().getMonth() + 1
 
-      console.log({yearOnly, monthOnly})
       const isoDateMatchSlice = m.datetime.slice(0, 7);
       const isoDateSearchSlice = date.slice(0, 7);
 
