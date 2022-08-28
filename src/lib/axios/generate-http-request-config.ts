@@ -7,12 +7,12 @@ export interface GenerateHttpRequestConfigArgs {
   data?: any;
 }
 
-export const generateHttpRequestConfig = ({
+export const generateHttpRequestConfig = <D = any>({
   url,
   method,
   params,
   data,
-}: GenerateHttpRequestConfigArgs) => {
+}: GenerateHttpRequestConfigArgs): AxiosRequestConfig<D> => {
   const normalizedMethod = method.toUpperCase() as Method;
 
   const contentType: AxiosRequestHeaders =

@@ -11,22 +11,18 @@ import Link from 'next/link';
 import { MatchesList } from '../../features/matches/components/matches-list/matches-list';
 import { transformRawMatchesToMatchesWithPlayers } from '../../features/matches/utils/helpers/get-my-joined-matches';
 import { MatchesSearch } from '../../features/matches/components/matches-search/matches-search';
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useMatchesService } from '../../features/matches/services/matches/use-matches-service';
+import axios from 'axios';
 
-// TODO this is temp data
+// TODO this is temp data fetching on client side
+// not convinced i will use it here
 
 type MatchesPageProps = InferGetServerSidePropsType<typeof getServerSideProps>;
 
 const MatchesPage: NextPage<MatchesPageProps> = ({ user }) => {
   const router = useRouter();
-
-  const { handleGetMatches } = useMatchesService();
-
-  const { isLoading, isError, error, data } = handleGetMatches();
-
-  // console.log({ isLoading, isError, error, data });
 
   // TODO this will later be done via csr and use effect
   const rawMatches = db.matches;
@@ -45,6 +41,10 @@ const MatchesPage: NextPage<MatchesPageProps> = ({ user }) => {
       },
     });
   };
+
+  // useEffect(() => {
+
+  // }, []);
 
   return (
     <div>
@@ -77,6 +77,12 @@ export const getServerSideProps: GetServerSideProps<{
     id: 1,
     nickname: 'Zidane',
   };
+
+  const response = axios
+    .get(
+      'https://api.darksky.net/forecast/7e5a6c3357123c8400c93c56caa83743/42.3601,-71.0589,1661677583?exclude=currently,flags'
+    )
+    .then(console.log);
 
   return {
     props: {

@@ -1,20 +1,22 @@
 import { Dispatch, SetStateAction } from 'react';
-import { MatchesServiceDataState } from './types';
 
+// TODO not sure if this belongs here or in some generic types
+export type ServiceDataState<T> = {
+  data: T;
+  errorMessage: string;
+  isLoading: boolean;
+};
 
-// TODO eventually use generic
-// TODO this could go anywhere , it could be reused
-export const getHandlersForMatchesServiceState = <T>(
-  // TODO this is not even used
-  // prevState: MatchesServiceDataState<T>,
-  stateSetter: Dispatch<SetStateAction<MatchesServiceDataState<T>>>
+export const INITIAL_SERVICE_DATA_STATE: ServiceDataState<null> = {
+  data: null,
+  errorMessage: '',
+  isLoading: false,
+};
+
+// todo HANDLE NULLS - SHOULD HAVE SOME INITIAL STATE
+export const getServiceDataStateHandlers = <T>(
+  stateSetter: Dispatch<SetStateAction<ServiceDataState<T>>>
 ) => {
-  // TODO not sure if this will work
-  // const isLoading = prevState.isLoading;
-  // const errorMessage = prevState.errorMessage;
-  // const isError = !!prevState.errorMessage;
-  // const data = prevState.data;
-
   const setError = (error: string) => {
     stateSetter((prev) => {
       return {
@@ -52,10 +54,6 @@ export const getHandlersForMatchesServiceState = <T>(
   };
 
   return {
-    // data,
-    // errorMessage,
-    // isError,
-    // isLoading,
     setData,
     setError,
     startLoading,
