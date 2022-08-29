@@ -34,4 +34,5 @@ export type FailureResponse = {
   errors: string[];
 };
 
+// TODO rename this to result response
 export type UnionResponse<T> = SuccessResponse<T> | FailureResponse;
